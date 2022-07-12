@@ -14,9 +14,11 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
 
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
+import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
 @Configuration
 @EnableWebSecurity
@@ -34,8 +36,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable();
-        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-//        http.sessionManagement().sessionCreationPolicy(STATELESS);
+        //Removes Cross-Origin Request Blocked error (/login)
+        http.cors().configurationSource(request -> new CorsConfiguration().applyPermitDefaultValues());
+        http.sessionManagement().sessionCreationPolicy(STATELESS);
         //Specify which route(s) can be accessed w/o authentication first
         http.authorizeRequests().antMatchers("/login/**", "/api/token/refresh/**").permitAll();
         //Specifies which route is accessible by which role.
